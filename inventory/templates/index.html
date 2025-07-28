@@ -43,7 +43,7 @@
         }
 
         async function fetchInventory(query = '') {
-            const response = await fetch(`/api/inventory/?search=${query}`);
+            const response = await fetch(`/api/inventory/?name=${query}`);
             const data = await response.json();
             renderInventory(data);
         }
