@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}Inventory List{% endblock %}
+
+{% block content %}
+    <h2>Inventory List</h2>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search items by name...">
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Supplier</th>
+                <th>Availability</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTable"></tbody>
+    </table>
+{% endblock %}
+
+{% block extra_head %}
+<script>
+    const tableBody = document.addEventListener('DOMContentLoaded', () => {
+        const tableBody = document.getElementById('inventoryTable');
+        const searchInput = document.getElementById('searchInput');
+
+        function renderInventory(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3">No items found.</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><a href="/inventory/${item.id}/">${item.name}</a></td>
+                    <td>${item.supplier_name}</td>
+                    <td>${item.availability ? 'Available' : 'Unavailable'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function fetchInventory(query = '') {
+            const response = await fetch(`/api/inventory/?search=${query}`);
+            const data = await response.json();
+            renderInventory(data);
+        }
+
+        fetchInventory();
+        searchInput.addEventListener('input', (e) => fetchInventory(e.target.value));
+    });
+</script>
+{% endblock %}
